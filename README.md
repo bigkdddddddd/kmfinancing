@@ -1,22 +1,20 @@
 # KM Financing Website
 
-Premium, conversion-focused finance brokerage website for **KM Financing**, built with Next.js, Supabase, Resend, and Google Calendar.
+Premium, conversion-focused finance brokerage website for **KM Financing**, built with Next.js, Supabase, Resend, Google Calendar, and Netlify deployment support.
 
 The site focuses primarily on **home loans** and **car loans**, while also supporting refinancing, investment loans, construction loans, commercial finance, debt consolidation, self-employed lending, and other asset finance.
 
 ## Included
 
 - Responsive premium finance website
-- Home page, About, Services, Home Loans, Car Loans, Calculators, Eligibility Check, Booking, Testimonials, FAQ, Contact, Resources
-- Dedicated lead-gated eligibility/borrowing power landing page
+- Mortgage-flow-style tabbed finance finder
+- Clean text-box panels and segmented tabs
+- Eligibility check flow
 - Home loan and car loan calculators
 - Supabase data handling for leads, eligibility checks, calculator results, contact messages, and appointments
 - Resend email notifications and confirmations
-- Google Calendar availability checking and event creation
-- Editable CMS-like data files for services, testimonials, FAQs, resources, and lender placeholders
-- Supabase SQL schema
-- Environment variable example file
-- Vercel-ready project structure
+- Google Calendar appointment creation structure
+- Netlify-ready configuration
 
 ## Local setup
 
@@ -30,19 +28,48 @@ Open `http://localhost:3000`.
 
 ## Supabase setup
 
-1. Create a new Supabase project.
-2. Go to **SQL Editor**.
-3. Run the SQL in `supabase/schema.sql`.
-4. Add your Supabase keys to `.env.local`.
+Supabase project already created:
 
-Use the service role key only on the server side. Do not expose it publicly.
+```txt
+Project ID: neymtndukowsluwxetgs
+Project URL: https://neymtndukowsluwxetgs.supabase.co
+```
 
-## Deploy to Vercel
+Tables created:
 
-1. Push this folder to GitHub.
-2. Import the repo into Vercel.
-3. Add all environment variables from `.env.example`.
-4. Deploy.
+- leads
+- appointments
+- calculator_results
+- contact_messages
+
+Add the Supabase environment variables in Netlify.
+
+## Deploy to Netlify
+
+1. Go to Netlify.
+2. Add new site from Git.
+3. Choose this GitHub repository.
+4. Build command: `npm run build`
+5. Publish directory: `.next`
+6. Netlify will use `netlify.toml` and `@netlify/plugin-nextjs`.
+7. Add environment variables from `.env.example`.
+8. Deploy.
+
+## Environment variables
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://neymtndukowsluwxetgs.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+RESEND_API_KEY=
+FROM_EMAIL=
+ADMIN_EMAIL=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REFRESH_TOKEN=
+GOOGLE_CALENDAR_ID=primary
+GOOGLE_TIMEZONE=Australia/Melbourne
+```
 
 ## Compliance placeholders
 
