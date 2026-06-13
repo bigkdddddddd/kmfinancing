@@ -12,18 +12,31 @@ function supabase() {
 export async function POST(req: Request) {
   const body = await req.json();
   const db = supabase();
+  const form = body.form || body.contact || body;
   const record = {
-    source_page: body.type || "website",
-    full_name: body.contact?.fullName || body.form?.fullName || body.contact?.full_name || null,
-    email: body.contact?.email || body.form?.email || null,
-    phone: body.contact?.phone || body.form?.phone || null,
-    message: body.contact?.message || body.form?.message || null,
+    source_page: body.sourcePage || body.type || "website",
+    full_name: form.fullName || form.full_name || null,
+    email: form.email || null,
+    phone: form.phone || null,
+    message: form.message || null,
     payload: body,
     status: "new"
   };
 
   if (db) {
     await db.from("leads").insert(record);
+    if (body.type === "callback_request") {
+      await db.from("callback_requests").insert({
+        full_name: record.full_name,
+        phone: record.phone,
+        email: record.email,
+        topic: form.topic || form.purpose || null,
+        message: record.message,
+        source_page: record.source_page,
+        payload: body,
+        status: "new"
+      });
+    }
   }
 
   if (process.env.RESEND_API_KEY && process.env.ADMIN_EMAIL && process.env.FROM_EMAIL) {
@@ -31,16 +44,15 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: process.env.FROM_EMAIL,
       to: process.env.ADMIN_EMAIL,
-      subject: "New KM Financing website lead",
-      html: `<h2>New KM Financing lead</h2><pre>${JSON.stringify(body, null, 2)}</pre>`
+      subject: body.type === "callback_request" ? "New KM Financing callback request" : "New KM Financing website lead",
+      html: `<h2>New KM Financing enquiry</h2><pre>${JSON.stringify(body, null, 2)}</pre>`
     });
-    const clientEmail = record.email;
-    if (clientEmail) {
+    if (record.email) {
       await resend.emails.send({
         from: process.env.FROM_EMAIL,
-        to: clientEmail,
-        subject: "KM Financing received your enquiry",
-        html: `<p>Thanks for contacting KM Financing. Your enquiry has been received.</p><p>For a precise figure, book a free consultation.</p>`
+        to: record.email,
+        subject: "KM Financing received your request",
+        html: `<p>Thanks for contacting KM Financing. Your request has been received.</p><p>A broker will follow up with personalised numbers.</p>`
       });
     }
   }
